@@ -1,0 +1,46 @@
+name: Deploy Frontend React
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@v4
+
+    - name: Deploy EC2 Frontend
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ec2-user
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+
+          sudo yum install docker -y
+          sudo service docker start
+
+          cd /home/ec2-user
+
+          if [ ! -d "appfrontend" ]; then
+            git clone https://github.com/YasmineMhadhbi/appfrontend.git
+          fi
+
+          cd appfrontend
+
+          git pull origin main
+
+          docker rm -f frontend || true
+
+          docker build -t frontend .
+
+          docker run -d \
+          -p 3000:3000 \
+          --name frontend \
+          --restart always \
+          frontend
