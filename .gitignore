@@ -1,0 +1,17 @@
+# environment variables
+.env
+
+# build output
+dist
+out
+
+# IDE settings
+.vscode
+.idea
+
+# OS files
+Thumbs.db
+*.log
+
+# docker cache
+docker-compose.override.yml
